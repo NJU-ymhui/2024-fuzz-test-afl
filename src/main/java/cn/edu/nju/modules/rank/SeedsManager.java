@@ -9,5 +9,8 @@ public interface SeedsManager {
     void sort(); // 对种子进行排序
 
     @UnmodifiableSignature
+    void addSeed(String seedPath, int coverage,int energy);
+
+    @UnmodifiableSignature
     void register(ResourcesManager resourcesManager); // implement class have this resource manager
 }
