@@ -30,5 +30,6 @@ public class SchedulerImpl implements Scheduler {
             }
         }
         Log.info("Energy scheduling completed.");
+        //
     }
 }
