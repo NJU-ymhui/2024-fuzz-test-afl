@@ -6,7 +6,7 @@ import cn.edu.nju.util.manager.ResourcesManager;
 public interface Executor {
     // TODO
     @UnmodifiableSignature
-    boolean execute(Object... args); // 请自行设计接口规约
+    boolean execute(String programPath, String inputFilePath, long timeoutMillis, String... additionalArgs); // 请自行设计接口规约
 
     @UnmodifiableSignature
     String getResultFromConsole();

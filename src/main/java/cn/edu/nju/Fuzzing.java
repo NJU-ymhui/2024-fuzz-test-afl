@@ -1,5 +1,8 @@
 package cn.edu.nju;
 
+import cn.edu.nju.modules.evaluate.EvaluatorImpl;
+import cn.edu.nju.modules.execute.ExecutorImpl;
+import cn.edu.nju.modules.monitor.MonitorImpl;
 import cn.edu.nju.modules.mutate.MutationImpl;
 import cn.edu.nju.modules.rank.SeedsManagerImpl;
 import cn.edu.nju.modules.schedule.SchedulerImpl;
@@ -24,9 +27,12 @@ public class Fuzzing {
         SeedsManagerImpl seedsManager = new SeedsManagerImpl();
         SchedulerImpl scheduler = new SchedulerImpl();
         MutationImpl mutation = new MutationImpl();
+        ExecutorImpl executor = new ExecutorImpl();
+        MonitorImpl monitor = new MonitorImpl();
+        EvaluatorImpl evaluator = new EvaluatorImpl();
 
         // 注册模块
-        fuzzingManager.register(seedsManager, scheduler, mutation);
+        fuzzingManager.register(seedsManager, scheduler, mutation, executor, monitor, evaluator);
 
         // 指定目标可执行文件的路径
         String path = System.getProperty("user.dir") + "test/resources/others/elf/small_exec.elf";

@@ -90,7 +90,8 @@ public class FuzzingManager {
 
             mutation.register(this.resourcesManager);
             mutation.mutate(); // 变异
-            if (!executor.execute(objPath)) { // TODO 可能还要别的参数
+            long timeoutMillis = 5000;
+            if (!executor.execute(objPath, seed.getFilepath(), timeoutMillis)) { // TODO 可能还要别的参数
                 Log.error(executor.getResultFromConsole());
             }
             evaluator.eval(); // 评估
