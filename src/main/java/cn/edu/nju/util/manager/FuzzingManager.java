@@ -69,10 +69,11 @@ public class FuzzingManager {
         }
         int loops = loopCount;
 
-        while (loops-- > 0) {
-            monitor.setUp(); // 开始监控
-            seedsManager.register(this.resourcesManager);
-            scheduler.register(this.resourcesManager);
+            while (loops-- > 0) {
+                resourcesManager.loadInitialSeeds(objPath);
+                monitor.setUp(); // 开始监控
+                seedsManager.register(this.resourcesManager);
+                scheduler.register(this.resourcesManager);
 
             seedsManager.sort(); // 种子排序
             scheduler.schedule(); // 能量调度
@@ -97,6 +98,7 @@ public class FuzzingManager {
             evaluator.eval(); // 评估
             monitor.tearDown(); // 结束监控
         }
+
 
     }
 }
