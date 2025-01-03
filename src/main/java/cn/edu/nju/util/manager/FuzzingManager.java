@@ -70,6 +70,7 @@ public class FuzzingManager {
         int loops = loopCount;
 
             while (loops-- > 0) {
+                resourcesManager.loadInitialSeeds(objPath);
                 monitor.setUp(); // 开始监控
                 seedsManager.register(this.resourcesManager);
                 scheduler.register(this.resourcesManager);

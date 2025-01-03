@@ -19,11 +19,10 @@ public class ResourcesManager {
         this.coverageData = new HashMap<>();
         this.vulnerabilities = new ArrayList<>();
         this.logPath = "fuzzing.log";
-        loadInitialSeeds();
     }
 
-    private void loadInitialSeeds() {
-        initialSeeds.add("D:\\test\\testcases\\testcases\\others\\elf\\small_exec.elf");
+    public void loadInitialSeeds(String Path) {
+        initialSeeds.add(Path);
     }
 
     public List<String> getInitialSeeds() {
