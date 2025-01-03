@@ -13,4 +13,6 @@ public interface SeedsManager {
 
     @UnmodifiableSignature
     void register(ResourcesManager resourcesManager); // implement class have this resource manager
+
+    SeedsManagerImpl.Seed getNextSeed();
 }

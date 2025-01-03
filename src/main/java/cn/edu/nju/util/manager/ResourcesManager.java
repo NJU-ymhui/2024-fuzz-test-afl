@@ -10,7 +10,6 @@ public class ResourcesManager {
     private List<Seed> seedList;
     private Map<String, Integer> coverageData;
     private List<String> vulnerabilities;
-    private String currentSeedPath;
     private String currentMutatedSeedPath;
     private String logPath;
 
@@ -24,10 +23,7 @@ public class ResourcesManager {
     }
 
     private void loadInitialSeeds() {
-        // 加载初始种子路径
-        initialSeeds.add("seeds/seed1.bin");
-        initialSeeds.add("seeds/seed2.bin");
-        // 根据需求添加更多种子
+        initialSeeds.add("D:\\test\\testcases\\testcases\\others\\elf\\small_exec.elf");
     }
 
     public List<String> getInitialSeeds() {
@@ -44,6 +40,10 @@ public class ResourcesManager {
             return seedList.get(0).getFilepath();
         }
         return null;
+    }
+
+    public void setCurrentMutatedSeedPath(String path) {
+        this.currentMutatedSeedPath = path;
     }
 
     public String getCurrentMutatedSeedPath() {

@@ -5,6 +5,7 @@ import cn.edu.nju.util.Log;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.Random;
 
 public class MutationImpl implements Mutation {
@@ -20,7 +21,8 @@ public class MutationImpl implements Mutation {
     public void mutate() {
         try {
             // 获取当前种子路径
-            String currentSeed = resourcesManager.getCurrentSeedPath();
+            String currentSeed = resourcesManager.getCurrentMutatedSeedPath();
+            System.out.println("Current seed: " + currentSeed);
             byte[] data = Files.readAllBytes(Paths.get(currentSeed));
 
             // 应用变异操作（示例为位翻转）
@@ -28,6 +30,7 @@ public class MutationImpl implements Mutation {
 
             // 保存变异后的数据
             String newSeedPath = saveMutatedData(mutatedData);
+            System.out.println("New seed: " + Arrays.toString(mutatedData));
             resourcesManager.addNewMutatedSeed(newSeedPath);
 
             Log.info("Mutated seed saved to " + newSeedPath);
