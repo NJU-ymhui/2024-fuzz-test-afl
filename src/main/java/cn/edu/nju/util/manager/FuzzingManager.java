@@ -71,6 +71,7 @@ public class FuzzingManager {
             Log.error("Some modules are not registered");
             throw new RuntimeException("Some modules are not registered");
         }
+        evaluator.register(resourcesManager); // 为评估器注册资源
         int loops = loopCount;
 
             while (loops-- > 0) {
@@ -99,7 +100,7 @@ public class FuzzingManager {
             if (!executor.execute(objPath, seed.getFilepath(), cmdOptions, timeoutMillis)) { // TODO 可能还要别的参数
                 Log.error(executor.getResultFromConsole());
             }
-            evaluator.eval(); // 评估
+//            evaluator.eval(something); // 评估，传入轮次和覆盖率信息
             monitor.tearDown(); // 结束监控
         }
 

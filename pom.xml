@@ -23,6 +23,12 @@
             <scope>test</scope>
         </dependency>
         <!-- 其他依赖项 -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.3</version>
+        </dependency>
+
     </dependencies>
 
     <!-- 构建配置 -->

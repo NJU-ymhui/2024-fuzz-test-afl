@@ -13,3 +13,9 @@
 - 声明接口`Evaluator`, `Executor`, `Monitor`, `Mutation`, `SeedsManager`, `Scheduler`
 - 初步构建全局管理类`FuzzingManager`, `ResourcesManager`
 
+### 2024/1/4   余明晖
+- 实现工具命令行参数解析
+- 实现评估组件`Evaluator`，可以绘制折线图记录覆盖率
+- 更新主类，实现参数传递与模糊器启动
+- 修缮代码结构和简单框架
+- 完成本地化`Docker`构建，不需要额外镜像下载，一键构建
