@@ -18,25 +18,30 @@ public class MutationImpl implements Mutation {
     }
 
     @Override
-    public void mutate() {
+    public String mutate() {
         try {
             // 获取当前种子路径
             String currentSeed = resourcesManager.getCurrentMutatedSeedPath();
             System.out.println("Current seed: " + currentSeed);
             byte[] data = Files.readAllBytes(Paths.get(currentSeed));
 
-            // 应用变异操作（示例为位翻转）
+            // 变异策略:位翻转
             byte[] mutatedData = bitFlipMutation(data);
 
             // 保存变异后的数据
             String newSeedPath = saveMutatedData(mutatedData);
             System.out.println("New seed: " + Arrays.toString(mutatedData));
-            resourcesManager.addNewMutatedSeed(newSeedPath);
+            //不应该在这里入队
+           // resourcesManager.addNewMutatedSeed(newSeedPath);
+
 
             Log.info("Mutated seed saved to " + newSeedPath);
+
+            return newSeedPath;
         } catch (IOException e) {
             Log.error("Mutation failed: " + e.getMessage());
         }
+        return null;
     }
 
     private byte[] bitFlipMutation(byte[] data) {

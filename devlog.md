@@ -13,3 +13,13 @@
 - 声明接口`Evaluator`, `Executor`, `Monitor`, `Mutation`, `SeedsManager`, `Scheduler`
 - 初步构建全局管理类`FuzzingManager`, `ResourcesManager`
 
+### 2024/12/29   王荣铮
+- 初步实现了`Mutation`, `SeedsManager`, `Scheduler`
+- 初步实现了全局管理类 `ResourcesManager`
+- 变异算子设置为位翻转
+
+### 2024/1/3  王荣铮
+- 初步实现了`FuzzingManager`种子生成执行流程
+
+### 2024/1/4 王荣铮
+- 发现种子地址传递逻辑问题，修改完成

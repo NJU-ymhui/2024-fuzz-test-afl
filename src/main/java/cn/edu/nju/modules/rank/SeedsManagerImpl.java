@@ -7,7 +7,7 @@ import java.util.*;
 
 public class SeedsManagerImpl implements SeedsManager {
     private ResourcesManager resourcesManager;
-    private PriorityQueue<Seed> seedQueue;
+    private PriorityQueue<Seed> seedQueue;//优先队列用于种子排序
 
     public SeedsManagerImpl() {
         // 按照覆盖率从高到低排序
@@ -42,7 +42,7 @@ public class SeedsManagerImpl implements SeedsManager {
     }
 
     public Seed getNextSeed() {
-        return seedQueue.poll();
+        return seedQueue.peek();//返回优先级最高的元素
     }
 
     // 内部种子类
