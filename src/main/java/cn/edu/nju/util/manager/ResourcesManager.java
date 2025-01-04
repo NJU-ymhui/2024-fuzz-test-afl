@@ -6,12 +6,12 @@ import java.util.*;
 
 
 public class ResourcesManager {
-    private List<String> initialSeeds;
-    private List<Seed> seedList;
-    private Map<String, Integer> coverageData;
+    private List<String> initialSeeds;//用于存放原始种子
+    private List<Seed> seedList;//用于存放种子
+    private Map<String, Integer> coverageData;//用于存放能量
     private List<String> vulnerabilities;
-    private String currentMutatedSeedPath;
-    private String logPath;
+    private String currentMutatedSeedPath;//现在的最佳选择
+    private String logPath;//原始种子的位置
 
     public ResourcesManager() {
         this.initialSeeds = new ArrayList<>();
@@ -29,17 +29,19 @@ public class ResourcesManager {
         return initialSeeds;
     }
 
+    //加入新的变异种子
     public void addNewMutatedSeed(String seedPath) {
         seedList.add(new Seed(seedPath, 0, 1)); // 新变异种子的初始能量为1
         currentMutatedSeedPath = seedPath;
     }
 
-    public String getCurrentSeedPath() {
+    //该函数失效
+    /*public String getCurrentSeedPath() {
         if (!seedList.isEmpty()) {
             return seedList.get(0).getFilepath();
         }
         return null;
-    }
+    }*/
 
     public void setCurrentMutatedSeedPath(String path) {
         this.currentMutatedSeedPath = path;

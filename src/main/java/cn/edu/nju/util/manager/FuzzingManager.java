@@ -94,9 +94,9 @@ public class FuzzingManager {
             Log.info("FuzzingManager: Current seed set to " + seed.getFilepath());
 
             mutation.register(this.resourcesManager);
-            mutation.mutate(); // 变异
+            String mutationPath = mutation.mutate(); // 变异
             long timeoutMillis = 5000;
-            if (!executor.execute(objPath, seed.getFilepath(), cmdOptions, timeoutMillis)) { // TODO 可能还要别的参数
+            if (!executor.execute(objPath, mutationPath, cmdOptions, timeoutMillis)) { // TODO 可能还要别的参数
                 Log.error(executor.getResultFromConsole());
             }
             evaluator.eval(); // 评估
