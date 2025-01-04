@@ -101,7 +101,23 @@ cn.edu.nju.modules.execute.ExecutorImpl
         - 调用 Python 解释器运行脚本。
         - 捕获脚本的标准输出。
         - 处理脚本执行中的异常或超时。
+4. **方法：`getCoverageData`**
 
+   - **功能**：
+
+       - 返回在执行插桩程序时解析并存储的覆盖率数据。
+       - 覆盖率数据以百分比形式存储，每次执行的覆盖率数据以列表形式返回。
+
+   - **方法签名**：
+
+     ```
+     public List<Double> getCoverageData();
+     ```
+
+   - **返回值**：
+
+       - 类型：`List<Double>`
+       - 每个元素表示一次插桩程序执行的覆盖率百分比。
 ------
 
 ### **3. `executor.py` 脚本**

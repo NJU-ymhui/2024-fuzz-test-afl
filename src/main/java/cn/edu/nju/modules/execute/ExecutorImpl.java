@@ -14,12 +14,14 @@ import java.util.concurrent.TimeUnit;
 public class ExecutorImpl implements Executor {
     private ResourcesManager resourcesManager;
     private StringBuilder consoleOutput;
+    private List<Double> coverageData; // 保存覆盖率数据
 
     // 指定 executor.py 的路径
     private static final String EXECUTOR_PY_PATH = "src/main/java/cn/edu/nju/modules/execute/executor.py";
 
     public ExecutorImpl() {
         this.consoleOutput = new StringBuilder();
+        this.coverageData = new ArrayList<>();
     }
 
     @Override
@@ -61,6 +63,14 @@ public class ExecutorImpl implements Executor {
     }
 
     /**
+     * 获取解析后的覆盖率数据
+     * @return List<Double> 类型的覆盖率数据
+     */
+    public List<Double> getCoverageData() {
+        return coverageData;
+    }
+
+    /**
      * 调用 executor.py 脚本
      */
     private String runExecutorScript(String programPath, String inputFilePath, List<String> cmdOptions,
@@ -88,6 +98,9 @@ public class ExecutorImpl implements Executor {
                 while ((line = reader.readLine()) != null) {
                     output.append(line).append("\n");
                     Log.info("executor.py output: " + line);
+
+                    // 尝试解析覆盖率数据并保存到 coverageData
+                    parseCoverageLine(line);
                 }
             }
 
@@ -110,5 +123,21 @@ public class ExecutorImpl implements Executor {
             }
         }
         return output.toString();
+    }
+
+    /**
+     * 解析覆盖率数据并保存到 coverageData
+     * @param line 输出的每一行
+     */
+    private void parseCoverageLine(String line) {
+        try {
+            // 假设覆盖率是以百分比形式输出，例如 "10.45%"
+            if (line.trim().endsWith("%")) {
+                double coverage = Double.parseDouble(line.replace("%", "").trim());
+                coverageData.add(coverage);
+            }
+        } catch (NumberFormatException e) {
+            Log.error("Executor: Failed to parse coverage percentage from line: " + line);
+        }
     }
 }
