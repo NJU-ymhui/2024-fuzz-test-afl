@@ -13,6 +13,10 @@
 - 声明接口`Evaluator`, `Executor`, `Monitor`, `Mutation`, `SeedsManager`, `Scheduler`
 - 初步构建全局管理类`FuzzingManager`, `ResourcesManager`
 
+### 2024/12/29   王荣铮
+- 初步实现了`Mutation`, `SeedsManager`, `Scheduler`
+- 初步实现了全局管理类 `ResourcesManager`
+- 变异算子设置为位翻转
 ### 2024/1/4   余明晖
 - 实现工具命令行参数解析
 - 实现评估组件`Evaluator`，可以绘制折线图记录覆盖率
@@ -24,6 +28,12 @@
 - 更新`ResourcesManager`，添加对监控数据的支持
 - 编写`Monitor`模块的详细`README.md`
 
+### 2024/1/3  王荣铮
+- 初步实现了`FuzzingManager`种子生成执行流程
+
+### 2024/1/4 王荣铮
+- 发现种子地址传递逻辑问题，修改完成
+- 添加变异策略
 ### 2024/12/25   王丁涵
 - 集成`MonitorImpl`到主流程，确保模糊测试过程中的数据被正确记录
 - 测试监控组件在不同模糊测试场景下的表现，修复发现的问题
