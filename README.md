@@ -15,9 +15,19 @@
   - `cn.edu.nju.modules.monitor`: 执行结果监控组件
   - `cn.edu.nju.modules.evaluate`: 评估组件
 
-## 开箱即用
+## 构建环境
 执行如下指令
 ```shell
 ./build.sh
 ```  
 构建docker镜像
+
+## 如何使用
+1. 构建环境
+2. 准备资源：待测可执行文件和初始种子
+3. 传递参数
+```shell
+java -jar fuzz-test-afl-2024-1.0-SNAPSHOT.jar <test-file-path> <options> <initial-seeds-path>
+```
+4. 等待结果输出
+5. 查看日志
