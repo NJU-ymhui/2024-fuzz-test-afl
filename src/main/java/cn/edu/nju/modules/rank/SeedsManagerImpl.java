@@ -36,7 +36,7 @@ public class SeedsManagerImpl implements SeedsManager {
     }
 
     @Override
-    public void addSeed(String seedPath, int coverage,int energy) {
+    public void addSeed(String seedPath, double coverage,double energy) {
         seedQueue.add(new Seed(seedPath, coverage,energy));
         Log.info("Added new seed: " + seedPath + " with coverage: " + coverage);
     }
