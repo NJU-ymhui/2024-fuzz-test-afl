@@ -29,6 +29,7 @@ public class ResourcesManager {
         return initialSeeds;
     }
 
+
     //加入新的变异种子
     public void addNewMutatedSeed(String seedPath) {
         seedList.add(new Seed(seedPath, 0, 1)); // 新变异种子的初始能量为1
@@ -79,5 +80,9 @@ public class ResourcesManager {
 
     public Collection<Seed> getAllSeeds() {
         return seedList;
+    }
+
+    public String getRandomSeedPath() {
+        return initialSeeds.get(new Random().nextInt(initialSeeds.size()));
     }
 }
