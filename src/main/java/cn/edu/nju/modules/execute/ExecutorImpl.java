@@ -5,93 +5,49 @@ import cn.edu.nju.util.manager.ResourcesManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class ExecutorImpl implements Executor {
-    private static final int SHM_SIZE = 65536; // 共享内存大小 (64KB)
     private ResourcesManager resourcesManager;
-    private StringBuilder consoleOutput; // 用于存储程序输出
-    private int shmId; // 共享内存 ID
-    private String shmPath; // 共享内存路径
-
-    public ExecutorImpl() {
-        this.consoleOutput = new StringBuilder();
-        this.shmId = -1;
-        this.shmPath = null;
-    }
 
     @Override
     public boolean execute(String programPath, String inputFilePath, long timeoutMillis, String... additionalArgs) {
         if (programPath == null || programPath.isEmpty()) {
             throw new IllegalArgumentException("Program path cannot be null or empty.");
         }
+        if (inputFilePath == null || inputFilePath.isEmpty()) {
+            throw new IllegalArgumentException("Input file path cannot be null or empty.");
+        }
+        System.out.println("Program file path: " + programPath);
+        System.out.println("Input file path: " + inputFilePath);
 
         try {
-            // 1. 使用 ipcmk 创建共享内存
-            createSharedMemory();
-
-            // 2. 构建命令
-            List<String> command = new ArrayList<>();
-            command.add(programPath);
-
-            // 添加输入文件路径
-            if (inputFilePath != null && !inputFilePath.isEmpty()) {
-                command.add(inputFilePath);
-            }
-
-            // 添加额外参数
-            if (additionalArgs != null && additionalArgs.length > 0) {
-                command.addAll(Arrays.asList(additionalArgs));
-            }
-
-            // 使用 ProcessBuilder 构建并启动进程
-            ProcessBuilder pb = new ProcessBuilder(command);
-            pb.redirectErrorStream(true); // 将错误输出合并到标准输出
-
-            // 设置共享内存 ID 环境变量
-            pb.environment().put("AFL_SHM_ID", String.valueOf(shmId));
-
-            Process process = pb.start();
-
-            // 捕获标准输出
-            consoleOutput.setLength(0); // 清空之前的输出
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    consoleOutput.append(line).append("\n");
-                }
-            }
-
-            // 设置超时
-            if (!process.waitFor(timeoutMillis, TimeUnit.MILLISECONDS)) {
-                process.destroy(); // 强制终止
-                consoleOutput.append("Execution timed out.\n");
+            // Step 1: 调用 shm_writer 创建共享内存并运行插桩程序
+            int shmId = runShmWriter(programPath, inputFilePath);
+            if (shmId == -1) {
+                System.err.println("Failed to execute shm_writer.");
                 return false;
             }
 
-            // 3. 读取共享内存中的覆盖率数据
-            readSharedMemory();
+            // Step 2: 调用 shm_reader 读取共享内存内容
+            String output = runShmReader(shmId);
+            if (output == null) {
+                System.err.println("Failed to execute shm_reader.");
+                return false;
+            }
 
-            // 返回执行状态
-            return process.exitValue() == 0;
-        } catch (IOException | InterruptedException e) {
-            consoleOutput.append("Error during execution: ").append(e.getMessage());
+            // 打印结果到控制台
+            System.out.println("Program Output:\n" + output);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
-        } finally {
-            // 4. 清理共享内存
-            cleanupSharedMemory();
         }
     }
 
     @Override
     public String getResultFromConsole() {
-        return consoleOutput.toString();
+        return "Use shm_reader to retrieve results from shared memory.";
     }
 
     @Override
@@ -100,70 +56,59 @@ public class ExecutorImpl implements Executor {
     }
 
     /**
-     * 使用 ipcmk 创建共享内存段
+     * 调用 shm_writer 创建共享内存并运行插桩程序
+     *
+     * @param programPath 插桩程序路径
+     * @param inputFilePath 输入文件路径
+     * @return 创建的共享内存 ID，失败时返回 -1
      */
-    private void createSharedMemory() throws IOException {
-        // 使用 ipcmk 命令创建共享内存
-        ProcessBuilder pb = new ProcessBuilder("ipcmk", "-M", String.valueOf(SHM_SIZE));
-        pb.redirectErrorStream(true); // 合并错误流到标准输出
+    private int runShmWriter(String programPath, String inputFilePath) throws IOException, InterruptedException {
+        ProcessBuilder pb = new ProcessBuilder("./src/main/java/cn/edu/nju/modules/execute/shm_writer", programPath, inputFilePath);
+        pb.redirectErrorStream(true); // 合并标准输出和错误输出
         Process process = pb.start();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.startsWith("Shared memory id:")) {
-                    // 从输出中提取共享内存 ID
-                    shmId = Integer.parseInt(line.split(":")[1].trim());
-                    shmPath = "/dev/shm/afl_shm_" + shmId;
-                    System.out.println("Created shared memory ID: " + shmId);
-                    return;
+                System.out.println("shm_writer output: " + line);
+                if (line.startsWith("Created shared memory ID:")) {
+                    return Integer.parseInt(line.split(":")[1].trim());
                 }
             }
         }
 
-        // 如果没有正确提取到共享内存 ID，则抛出异常
-        throw new IOException("Failed to create shared memory using ipcmk.");
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            System.err.println("shm_writer failed with exit code: " + exitCode);
+        }
+        return -1;
     }
 
     /**
-     * 读取共享内存中的覆盖率数据
+     * 调用 shm_reader 读取共享内存内容
+     *
+     * @param shmId 共享内存 ID
+     * @return 共享内存中的内容，失败时返回 null
      */
-    private void readSharedMemory() {
-        if (shmPath == null) {
-            consoleOutput.append("Shared memory path is invalid.\n");
-            return;
-        }
+    private String runShmReader(int shmId) throws IOException, InterruptedException {
+        ProcessBuilder pb = new ProcessBuilder("./src/main/java/cn/edu/nju/modules/execute/shm_reader", String.valueOf(shmId));
+        pb.redirectErrorStream(true); // 合并标准输出和错误输出
+        Process process = pb.start();
 
-        try (RandomAccessFile shmFile = new RandomAccessFile(shmPath, "r")) {
-            FileChannel channel = shmFile.getChannel();
-            MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, SHM_SIZE);
-
-            int coveredEdges = 0;
-            for (int i = 0; i < SHM_SIZE; i++) {
-                if ((buffer.get(i) & 0xFF) > 0) { // 转换为无符号整型
-                    coveredEdges++;
-                }
-            }
-            consoleOutput.append("Covered edges: ").append(coveredEdges).append("\n");
-        } catch (IOException e) {
-            consoleOutput.append("Failed to read shared memory: ").append(e.getMessage()).append("\n");
-        }
-    }
-
-    /**
-     * 清理共享内存段
-     */
-    private void cleanupSharedMemory() {
-        if (shmId != -1) {
-            try {
-                ProcessBuilder pb = new ProcessBuilder("ipcrm", "-m", String.valueOf(shmId));
-                pb.redirectErrorStream(true);
-                Process process = pb.start();
-                process.waitFor();
-                consoleOutput.append("Shared memory cleaned up successfully.\n");
-            } catch (IOException | InterruptedException e) {
-                consoleOutput.append("Failed to clean up shared memory: ").append(e.getMessage()).append("\n");
+        StringBuilder output = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
             }
         }
+
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            System.err.println("shm_reader failed with exit code: " + exitCode);
+            return null;
+        }
+
+        return output.toString();
     }
 }
