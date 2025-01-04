@@ -10,7 +10,10 @@ RUN apt-get update && apt-get install -y \
     maven \
     curl \
     git \
+    python \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip install sysv_ipc
 
 # 设置 Java 环境变量
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
