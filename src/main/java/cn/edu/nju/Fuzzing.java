@@ -35,7 +35,7 @@ public class Fuzzing {
         fuzzingManager.register(seedsManager, scheduler, mutation, executor, monitor, evaluator);
 
         // 指定目标可执行文件的路径
-        String path = System.getProperty("user.dir") + "test/resources/others/elf/small_exec.elf";
+        String path = System.getProperty("user.dir") + "/src/test/resources/initial-seeds/T02/small_exec.elf";
 
         // 运行模糊测试
         fuzzingManager.runOn(path);
