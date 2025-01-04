@@ -101,6 +101,7 @@ public class FuzzingManager {
             if (!executor.execute(objPath, mutationPath, cmdOptions, timeoutMillis)) { // TODO 可能还要别的参数
                 Log.error(executor.getResultFromConsole());
             }
+            monitor.parseCoverageData(executor.getCoverageData()); // 解析覆盖率数据
             monitor.tearDown(); // 结束监控
         }
         Log.info("Size: " + monitor.getCoverageMapByIteration().size());
