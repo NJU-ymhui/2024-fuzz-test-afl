@@ -14,3 +14,10 @@
   - `cn.edu.nju.modules.execute`: 测试执行组件
   - `cn.edu.nju.modules.monitor`: 执行结果监控组件
   - `cn.edu.nju.modules.evaluate`: 评估组件
+
+## 开箱即用
+执行如下指令
+```shell
+./build.sh
+```  
+构建docker镜像
