@@ -11,7 +11,7 @@ public class SeedsManagerImpl implements SeedsManager {
 
     public SeedsManagerImpl() {
         // 按照覆盖率从高到低排序
-        this.seedQueue = new PriorityQueue<>(Comparator.comparingInt(Seed::getCoverage).reversed());
+        this.seedQueue = new PriorityQueue<>(Comparator.comparingDouble(Seed::getCoverage).reversed());
     }
 
     @Override
@@ -48,32 +48,32 @@ public class SeedsManagerImpl implements SeedsManager {
     // 内部种子类
     public static class Seed {
         private String filepath;
-        private int coverage;
-        private int energy; // 添加能量属性
+        private double coverage;
+        private double energy; // 添加能量属性
 
-        public Seed(String filepath, int coverage,int energy) {
+        public Seed(String filepath, double coverage,double energy) {
             this.filepath = filepath;
-            this.coverage = coverage;
-            this.energy = energy;
+            this.coverage = coverage * 100;
+            this.energy = energy * 100;
         }
 
         public String getFilepath() {
             return filepath;
         }
 
-        public int getCoverage() {
+        public double getCoverage() {
             return coverage;
         }
 
-        public void setCoverage(int coverage) {
+        public void setCoverage(double coverage) {
             this.coverage = coverage;
         }
 
-        public int getEnergy() {
+        public double getEnergy() {
             return this.energy;
         }
 
-        public void setEnergy(int i) {
+        public void setEnergy(double i) {
             this.energy = i;
         }
     }
