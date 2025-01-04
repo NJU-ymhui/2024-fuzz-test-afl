@@ -10,6 +10,7 @@ import cn.edu.nju.modules.schedule.Scheduler;
 import cn.edu.nju.util.Log;
 
 import java.util.List;
+import java.util.Map;
 
 public class FuzzingManager {
     private int loopCount;
@@ -74,14 +75,14 @@ public class FuzzingManager {
         evaluator.register(resourcesManager); // 为评估器注册资源
         int loops = loopCount;
 
-            while (loops-- > 0) {
-                resourcesManager.loadInitialSeeds(initialSeedsPath);
-                monitor.setUp(); // 开始监控
-                seedsManager.register(this.resourcesManager);
-                scheduler.register(this.resourcesManager);
+        while (loops-- > 0) {
+            resourcesManager.loadInitialSeeds(initialSeedsPath);
+            monitor.setUp(); // 开始监控
+            seedsManager.register(this.resourcesManager);
+            scheduler.register(this.resourcesManager);
 
-                seedsManager.sort(); // 种子排序
-                scheduler.schedule(); // 能量调度
+            seedsManager.sort(); // 种子排序
+            scheduler.schedule(); // 能量调度
 
             // 获取下一个种子
             SeedsManagerImpl.Seed seed = seedsManager.getNextSeed();
@@ -100,10 +101,13 @@ public class FuzzingManager {
             if (!executor.execute(objPath, mutationPath, cmdOptions, timeoutMillis)) { // TODO 可能还要别的参数
                 Log.error(executor.getResultFromConsole());
             }
-            evaluator.eval(monitor.getCoverageMapByIteration()); // 评估，传入轮次和覆盖率信息
             monitor.tearDown(); // 结束监控
         }
-
+        Log.info("Size: " + monitor.getCoverageMapByIteration().size());
+        for (int i : monitor.getCoverageMapByIteration().keySet()) {
+            Log.info("Iteration " + i + ": " + monitor.getCoverageMapByIteration().get(i));
+        }
+        evaluator.eval(monitor.getCoverageMapByIteration()); // 评估，传入轮次和覆盖率信息
 
     }
 }

@@ -112,6 +112,7 @@ public class ExecutorImpl implements Executor {
 
             if (process.exitValue() != 0) {
                 Log.error("Executor: executor.py failed with exit code: " + process.exitValue());
+                Log.error("Executor: executor.py output: " + output);
                 return null;
             }
         } catch (IOException e) {
