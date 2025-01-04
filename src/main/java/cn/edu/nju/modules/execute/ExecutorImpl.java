@@ -1,5 +1,6 @@
 package cn.edu.nju.modules.execute;
 
+import cn.edu.nju.util.Log;
 import cn.edu.nju.util.manager.ResourcesManager;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,16 +19,16 @@ public class ExecutorImpl implements Executor {
     }
 
     @Override
-    public boolean execute(String programPath, String inputFilePath, long timeoutMillis, String... additionalArgs) {
+    public boolean execute(String programPath, String inputFilePath, List<String> cmdOptions, long timeoutMillis, String... additionalArgs) {
         if (programPath == null || programPath.isEmpty()) {
             throw new IllegalArgumentException("Program path cannot be null or empty.");
         }
-
+        Log.info("Executor: Executing program: " + programPath);
         try {
             // 构建命令
             List<String> command = new ArrayList<>();
-            command.add(programPath);
-
+            command.add(programPath); // 添加可执行文件
+            command.addAll(cmdOptions); // 添加命令行选项
             // 添加输入文件路径
             if (inputFilePath != null && !inputFilePath.isEmpty()) {
                 command.add(inputFilePath);
@@ -40,8 +41,23 @@ public class ExecutorImpl implements Executor {
 
             // 使用 ProcessBuilder 构建并启动进程
             ProcessBuilder pb = new ProcessBuilder(command);
+            StringBuilder commandString = new StringBuilder();
+            for (String arg : command) {
+                commandString.append(arg).append(" ");
+            }
+            Log.info("Command: " + commandString);
             pb.redirectErrorStream(true); // 将错误输出合并到标准输出
             Process process = pb.start();
+            Log.info("process started...");
+
+//            // 获取进程输出
+//            BufferedReader readerTmp = new BufferedReader(new InputStreamReader(process.getInputStream()));
+//            String l;
+//            StringBuilder lines = new StringBuilder();
+//            while ((l = readerTmp.readLine())!= null) {
+//                lines.append(l).append("\n");
+//            }
+//            Log.info(lines.toString());
 
             // 捕获标准输出
             consoleOutput.setLength(0); // 清空之前的输出

@@ -9,6 +9,8 @@ import cn.edu.nju.modules.rank.SeedsManagerImpl;
 import cn.edu.nju.modules.schedule.Scheduler;
 import cn.edu.nju.util.Log;
 
+import java.util.List;
+
 public class FuzzingManager {
     private int loopCount;
     private Evaluator evaluator;
@@ -61,8 +63,10 @@ public class FuzzingManager {
     /***
      *
      * @param objPath 源代码构建出来的可执行文件路径
+     * @param initialSeedsPath 初始种子路径
+     * @param cmdOptions 执行命令的选项
      */
-    public void runOn(String objPath) {
+    public void runOn(String objPath, String initialSeedsPath, List<String> cmdOptions) {
         if (mutation == null || seedsManager == null || scheduler == null || resourcesManager == null || monitor == null || executor == null || evaluator==null) {
             Log.error("Some modules are not registered");
             throw new RuntimeException("Some modules are not registered");
@@ -70,13 +74,13 @@ public class FuzzingManager {
         int loops = loopCount;
 
             while (loops-- > 0) {
-                resourcesManager.loadInitialSeeds(objPath);
+                resourcesManager.loadInitialSeeds(initialSeedsPath);
                 monitor.setUp(); // 开始监控
                 seedsManager.register(this.resourcesManager);
                 scheduler.register(this.resourcesManager);
 
-            seedsManager.sort(); // 种子排序
-            scheduler.schedule(); // 能量调度
+                seedsManager.sort(); // 种子排序
+                scheduler.schedule(); // 能量调度
 
             // 获取下一个种子
             SeedsManagerImpl.Seed seed = seedsManager.getNextSeed();
@@ -92,7 +96,7 @@ public class FuzzingManager {
             mutation.register(this.resourcesManager);
             mutation.mutate(); // 变异
             long timeoutMillis = 5000;
-            if (!executor.execute(objPath, seed.getFilepath(), timeoutMillis)) { // TODO 可能还要别的参数
+            if (!executor.execute(objPath, seed.getFilepath(), cmdOptions, timeoutMillis)) { // TODO 可能还要别的参数
                 Log.error(executor.getResultFromConsole());
             }
             evaluator.eval(); // 评估
