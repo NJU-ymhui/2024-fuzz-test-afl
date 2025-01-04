@@ -100,7 +100,7 @@ public class FuzzingManager {
             if (!executor.execute(objPath, mutationPath, cmdOptions, timeoutMillis)) { // TODO 可能还要别的参数
                 Log.error(executor.getResultFromConsole());
             }
-//            evaluator.eval(something); // 评估，传入轮次和覆盖率信息
+            evaluator.eval(monitor.getCoverageMapByIteration()); // 评估，传入轮次和覆盖率信息
             monitor.tearDown(); // 结束监控
         }
 

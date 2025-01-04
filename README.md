@@ -29,5 +29,9 @@
 ```shell
 java -jar fuzz-test-afl-2024-1.0-SNAPSHOT.jar <test-file-path> <options> <initial-seeds-path>
 ```
+e.g.
+```shell
+java -jar fuzz-test-afl-2024-1.0-SNAPSHOT.jar src/test/resources/testcases/T02/readelf -a src/test/resources/initial-seeds/T02/small_exec.elf
+```
 4. 等待结果输出
 5. 查看日志
