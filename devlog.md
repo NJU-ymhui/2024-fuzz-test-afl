@@ -13,3 +13,17 @@
 - 声明接口`Evaluator`, `Executor`, `Monitor`, `Mutation`, `SeedsManager`, `Scheduler`
 - 初步构建全局管理类`FuzzingManager`, `ResourcesManager`
 
+### 2024/12/20   王丁涵
+- 实现`MonitorImpl`，负责记录覆盖率、执行速度及特殊测试用例
+- 更新`ResourcesManager`，添加对监控数据的支持
+- 编写`Monitor`模块的详细`README.md`
+
+### 2024/12/25   王丁涵
+- 集成`MonitorImpl`到主流程，确保模糊测试过程中的数据被正确记录
+- 测试监控组件在不同模糊测试场景下的表现，修复发现的问题
+- 准备初步的统计图表，验证监控数据的准确性
+
+### 2024/12/30   王丁涵
+- 优化`MonitorImpl`的日志记录机制，提升性能
+- 完善监控数据的收集和存储，确保数据完整性
+- 更新`README.md`和`devlog.md`，记录最新的开发进展
