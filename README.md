@@ -47,3 +47,11 @@ java -jar fuzz-test-afl-2024-1.0-SNAPSHOT.jar src/test/resources/testcases/T02/r
 ```
 4. 等待结果输出
 5. 查看日志
+
+## 结果文件（日志 + 可视化图表）
+`src/test/resources/output`
+
+## 演示视频
+【软件测试课程代码大作业——覆盖率引导的模糊测试工具演示视频】 
+<br>
+https://www.bilibili.com/video/BV1FbrTYaEf7/?share_source=copy_web&vd_source=12654aed32292ea1c09af2a25c2f3116
