@@ -107,9 +107,10 @@ public class FuzzingManager {
             monitor.tearDown(); // 结束监控
         }
         Log.info("Size: " + monitor.getCoverageMapByIteration().size());
-        for (int i : monitor.getCoverageMapByIteration().keySet()) {
-            Log.info("Iteration " + i + ": " + monitor.getCoverageMapByIteration().get(i));
-        }
+//        for (int i : monitor.getCoverageMapByIteration().keySet()) {
+//            Log.info("Iteration " + i + ": " + monitor.getCoverageMapByIteration().get(i));
+//        }
+        Log.info("Crash: " + monitor.getCrashDate());
         evaluator.eval(monitor.getCoverageMapByIteration(), outputPath); // 评估，传入轮次和覆盖率信息
         evaluator.eval(monitor.getCrashDate(), outputPath, ""); // 评估崩溃次数
     }

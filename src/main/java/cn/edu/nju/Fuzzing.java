@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Fuzzing {
     // Coverage-guided mutation-based fuzzing tool
-    private final static int MAX_LOOP_COUNT = 100;
+    private final static int MAX_LOOP_COUNT = 10000;
     public static void main(String[] args) {
         // java -jar target.jar cmd1 cmd2
         // cmd1 is the executable file path
