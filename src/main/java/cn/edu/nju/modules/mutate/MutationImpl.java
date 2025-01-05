@@ -22,7 +22,7 @@ public class MutationImpl implements Mutation {
         try {
             // 获取当前种子路径
             String currentSeed = resourcesManager.getCurrentMutatedSeedPath();
-            System.out.println("Current seed: " + currentSeed);
+//            System.out.println("Current seed: " + currentSeed);
             byte[] data = Files.readAllBytes(Paths.get(currentSeed));
 
             // 变异策略
@@ -30,7 +30,7 @@ public class MutationImpl implements Mutation {
 
             // 保存变异后的数据
             String newSeedPath = saveMutatedData(mutatedData);
-            System.out.println("New seed: " + Arrays.toString(mutatedData));
+//            System.out.println("New seed: " + Arrays.toString(mutatedData));
             //不应该在这里入队
            // resourcesManager.addNewMutatedSeed(newSeedPath);
 

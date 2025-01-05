@@ -52,7 +52,7 @@ def main():
 
         # 读取共享内存内容
         data = shm.read(SHM_SIZE)
-        print("Shared Memory Content (Decimal):", list(data[:100]))
+        # print("Shared Memory Content (Decimal):", list(data[:100]))
 
         # 计算覆盖率
         total_slots, non_zero_slots, coverage_percentage = calculate_coverage(data)
