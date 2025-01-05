@@ -16,5 +16,7 @@ public interface Executor {
     @UnmodifiableSignature
     void register(ResourcesManager resourcesManager); // implement class have this resource manager
 
-    public List<Double> getCoverageData() ;
+    List<Double> getCoverageData() ;
+
+    Integer getCrash();
 }

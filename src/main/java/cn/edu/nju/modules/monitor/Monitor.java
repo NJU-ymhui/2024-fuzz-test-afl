@@ -1,5 +1,6 @@
 package cn.edu.nju.modules.monitor;
 
+import cn.edu.nju.modules.execute.Executor;
 import cn.edu.nju.util.annotations.UnmodifiableSignature;
 import cn.edu.nju.util.manager.ResourcesManager;
 
@@ -8,13 +9,15 @@ import java.util.Map;
 
 public interface Monitor {
     @UnmodifiableSignature
-    void setUp();
+    void setUp(String outputPath);
 
     @UnmodifiableSignature
     void tearDown();
 
     @UnmodifiableSignature
     void register(ResourcesManager resourcesManager); // implement class have this resource manager
+
+    void register(Executor executor);
 
     /**
      * 新增方法：
@@ -23,6 +26,10 @@ public interface Monitor {
      */
     Map<Integer, Double> getCoverageMapByIteration();
 
+    Map<Integer, Integer> getCrashDate();
+
     void parseCoverageData(List<Double> coverageList);
+
+    void parseCrashData(Integer crash);
 
 }

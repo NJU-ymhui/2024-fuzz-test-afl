@@ -35,3 +35,13 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "镜像构建完成：$IMAGE_NAME:$IMAGE_TAG"
+
+# 创建并启动容器
+container_id=$(docker run -d "$IMAGE_NAME:$IMAGE_TAG")
+
+# 从容器中导出文件
+docker cp $container_id:/app/target/fuzz-test-afl-2024-1.0-SNAPSHOT.jar .
+
+# 清理容器
+docker rm -f $container_id
+

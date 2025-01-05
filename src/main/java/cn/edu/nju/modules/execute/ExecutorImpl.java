@@ -14,7 +14,10 @@ import java.util.concurrent.TimeUnit;
 public class ExecutorImpl implements Executor {
     private ResourcesManager resourcesManager;
     private StringBuilder consoleOutput;
-    private List<Double> coverageData; // 保存覆盖率数据
+     List<Double> coverageData; // 保存覆盖率数据
+
+    private Integer crash = 0;
+    public List<Integer> crashTimes; // 保存崩溃数据
 
     // 指定 executor.py 的路径
     private static final String EXECUTOR_PY_PATH = "src/main/java/cn/edu/nju/modules/execute/executor.py";
@@ -22,6 +25,7 @@ public class ExecutorImpl implements Executor {
     public ExecutorImpl() {
         this.consoleOutput = new StringBuilder();
         this.coverageData = new ArrayList<>();
+        this.crashTimes = new ArrayList<>();
     }
 
     @Override
@@ -38,15 +42,20 @@ public class ExecutorImpl implements Executor {
             String output = runExecutorScript(programPath, inputFilePath, cmdOptions, additionalArgs, timeoutMillis);
             if (output == null) {
                 Log.error("Executor: Failed to execute executor.py.");
+                crash++;
+                crashTimes.add(crash);
                 return false;
             }
 
             // 打印结果
             Log.info("Executor: Program Output:\n" + output);
             consoleOutput.append(output);
+            crashTimes.add(crash);
             return true;
 
         } catch (Exception e) {
+            crash++;
+            crashTimes.add(crash);
             Log.error("Executor: Error during execution." + e);
             return false;
         }
@@ -68,6 +77,10 @@ public class ExecutorImpl implements Executor {
      */
     public List<Double> getCoverageData() {
         return coverageData;
+    }
+
+    public Integer getCrash() {
+        return crash;
     }
 
     /**

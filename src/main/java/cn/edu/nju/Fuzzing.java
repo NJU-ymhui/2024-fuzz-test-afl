@@ -16,16 +16,18 @@ import java.util.List;
 
 public class Fuzzing {
     // Coverage-guided mutation-based fuzzing tool
+    private final static int MAX_LOOP_COUNT = 60000;
     public static void main(String[] args) {
         // java -jar target.jar cmd1 cmd2
         // cmd1 is the executable file path
         // cmd2 is the initial seeds path
-        if (args.length < 2) {
-            Log.error("Usage: java -jar target.jar <executable-file-path-and-cmd> <initial-seeds-path>");
+        if (args.length < 4) {
+            Log.error("Usage: java -jar ${target.jar} <executable-file-path-and-cmd> [<options>] <initial-seeds-path> -o <output-path>");
             return;
         }
-        String executableFilePath = args[0], initialSeedsPath = args[args.length - 1];  // 可执行文件路径和初始种子路径, 正式运行的时候替换最下面的那个path
-        List<String> cmdOptions = new ArrayList<>(Arrays.asList(args).subList(1, args.length - 1));
+        String executableFilePath = args[0], initialSeedsPath = args[args.length - 3];  // 可执行文件路径和初始种子路径, 正式运行的时候替换最下面的那个path
+        List<String> cmdOptions = new ArrayList<>(Arrays.asList(args).subList(1, args.length - 3));
+        String outputPath = args[args.length - 1];
         // 创建 ResourcesManager 实例
         ResourcesManager resourcesManager = new ResourcesManager();
 
@@ -34,7 +36,7 @@ public class Fuzzing {
         fuzzingManager.allocateResource(resourcesManager);
 
         // 设置循环次数，例如10次
-        fuzzingManager.setLoopCount(10);
+        fuzzingManager.setLoopCount(MAX_LOOP_COUNT);
 
         // 创建要测试的模块实例
         SeedsManagerImpl seedsManager = new SeedsManagerImpl();
@@ -49,7 +51,7 @@ public class Fuzzing {
 
         // 运行模糊测试
         fuzzingManager.runOn(System.getProperty("user.dir") + "/" + executableFilePath,
-                System.getProperty("user.dir") + "/" + initialSeedsPath, cmdOptions);
+                System.getProperty("user.dir") + "/" + initialSeedsPath, cmdOptions, outputPath);
 
         Log.info("Fuzzing: Fuzzing process completed.");
     }

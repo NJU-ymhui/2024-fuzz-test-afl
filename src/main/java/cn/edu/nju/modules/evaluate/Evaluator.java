@@ -11,7 +11,9 @@ public interface Evaluator {
      * @param epoch2Coverage: key: 轮数, value: 覆盖率
      */
     @UnmodifiableSignature
-    void eval(Map<Integer, Double> epoch2Coverage); // 占位参数，可根据需要设定
+    void eval(Map<Integer, Double> epoch2Coverage, String output); // 占位参数，可根据需要设定
+
+    void eval(Map<Integer, Integer> epoch2Crash, String output, String dummy);
 
     /**
      * @param msg: 监控信息, 可以传测试过程中pb进程的控制台输出 / shm内容

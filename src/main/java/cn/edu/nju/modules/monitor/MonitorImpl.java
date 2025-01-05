@@ -1,5 +1,6 @@
 package cn.edu.nju.modules.monitor;
 
+import cn.edu.nju.modules.execute.Executor;
 import cn.edu.nju.util.Log;
 import cn.edu.nju.util.manager.ResourcesManager;
 
@@ -19,12 +20,16 @@ import java.util.Map;
  */
 public class MonitorImpl implements Monitor {
     private ResourcesManager resourcesManager;
+    private String outputPath;
+    private Executor executor;
     private BufferedWriter logWriter;
     private long startTime;
     private long endTime;
 
     // 记录迭代轮次 -> 覆盖率
     private final Map<Integer, Double> iterationCoverageMap = new LinkedHashMap<>();
+
+    private final Map<Integer, Integer> iterationCrashMap = new LinkedHashMap<>();
     // 用于累加轮次数
     private int iterationCounter = 0;
 
@@ -34,10 +39,16 @@ public class MonitorImpl implements Monitor {
     }
 
     @Override
-    public void setUp() {
+    public void register(Executor executor) {
+        this.executor = executor;
+    }
+
+    @Override
+    public void setUp(String outputPath) {
+        this.outputPath = outputPath;
         try {
-            String logFilePath = resourcesManager.getLogPath();
-            logWriter = new BufferedWriter(new FileWriter(logFilePath, true));
+//            String logFilePath = resourcesManager.getLogPath();
+            logWriter = new BufferedWriter(new FileWriter(System.getProperty("user.dir") + "/" + outputPath + "/fuzzing.log", true));
             startTime = System.currentTimeMillis();
             log("Monitoring started at " + LocalDateTime.now());
         } catch (IOException e) {
@@ -69,18 +80,24 @@ public class MonitorImpl implements Monitor {
         }
 
         // 假设 coverageList 中有多个数据，则逐条记录
-        for (Double coverage : coverageList) {
-            iterationCounter++;
-            iterationCoverageMap.put(iterationCounter, coverage);
-        }
+        iterationCounter++;
+        iterationCoverageMap.put(iterationCounter, coverageList.get(coverageList.size() - 1));
     }
 
+    public void parseCrashData(Integer crash) {
+        iterationCrashMap.put(iterationCounter, crash);
+    }
     /**
      * 实现接口中要求返回的 map
      */
     @Override
     public Map<Integer, Double> getCoverageMapByIteration() {
         return iterationCoverageMap;
+    }
+
+    @Override
+    public Map<Integer, Integer> getCrashDate() {
+        return iterationCrashMap;
     }
 
     /**
@@ -117,7 +134,7 @@ public class MonitorImpl implements Monitor {
             if (durationSeconds == 0) durationSeconds = 1; // Avoid division by zero
             int totalExecutions = resourcesManager.getCoverageData().size(); // Placeholder
             double executionsPerSecond = (double) totalExecutions / durationSeconds;
-            log("Execution Speed: " + executionsPerSecond + " executions/second");
+            log("Coverage data: " + executor.getCoverageData().get(executor.getCoverageData().size() - 1) * 100 + "%");
 
             // Save special test cases if any
             if (!resourcesManager.getVulnerabilities().isEmpty()) {

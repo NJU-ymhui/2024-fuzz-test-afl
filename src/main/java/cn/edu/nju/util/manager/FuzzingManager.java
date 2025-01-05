@@ -67,17 +67,18 @@ public class FuzzingManager {
      * @param initialSeedsPath 初始种子路径
      * @param cmdOptions 执行命令的选项
      */
-    public void runOn(String objPath, String initialSeedsPath, List<String> cmdOptions) {
+    public void runOn(String objPath, String initialSeedsPath, List<String> cmdOptions, String outputPath) {
         if (mutation == null || seedsManager == null || scheduler == null || resourcesManager == null || monitor == null || executor == null || evaluator==null) {
             Log.error("Some modules are not registered");
             throw new RuntimeException("Some modules are not registered");
         }
         evaluator.register(resourcesManager); // 为评估器注册资源
+        monitor.register(executor); // 为监控器注册执行器
         int loops = loopCount;
 
         while (loops-- > 0) {
             resourcesManager.loadInitialSeeds(initialSeedsPath);
-            monitor.setUp(); // 开始监控
+            monitor.setUp(outputPath); // 开始监控
             seedsManager.register(this.resourcesManager);
             scheduler.register(this.resourcesManager);
 
@@ -102,13 +103,14 @@ public class FuzzingManager {
                 Log.error(executor.getResultFromConsole());
             }
             monitor.parseCoverageData(executor.getCoverageData()); // 解析覆盖率数据
+            monitor.parseCrashData(executor.getCrash()); // 解析崩溃数据
             monitor.tearDown(); // 结束监控
         }
         Log.info("Size: " + monitor.getCoverageMapByIteration().size());
         for (int i : monitor.getCoverageMapByIteration().keySet()) {
             Log.info("Iteration " + i + ": " + monitor.getCoverageMapByIteration().get(i));
         }
-        evaluator.eval(monitor.getCoverageMapByIteration()); // 评估，传入轮次和覆盖率信息
-
+        evaluator.eval(monitor.getCoverageMapByIteration(), outputPath); // 评估，传入轮次和覆盖率信息
+        evaluator.eval(monitor.getCrashDate(), outputPath, ""); // 评估崩溃次数
     }
 }
