@@ -22,6 +22,8 @@
 
 方法一 (推荐)：maven构建，执行如下命令
 ```shell
+apt install maven
+chmod a+x mvn_build.sh
 ./mvn_build.sh
 ```
 完成构建jar包`fuzz-test-afl-2024-1.0-SNAPSHOT.jar`，可参考**如何使用**执行命令
