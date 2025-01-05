@@ -27,46 +27,52 @@ def main():
     input_file_path = sys.argv[2]
     additional_args = sys.argv[3:]
 
-    # 创建共享内存
-    shm = sysv_ipc.SharedMemory(None, flags=sysv_ipc.IPC_CREX, mode=0o600, size=SHM_SIZE)
-    os.environ[SHM_ENV_VAR] = str(shm.id)
-    initial_data = bytes([0] * SHM_SIZE)  # 64KB 的全 0 数据
-    shm.write(initial_data)
-
-    # 读取共享内存内容
-    data = shm.read(SHM_SIZE)
-    print("Shared Memory Content F (Decimal):", list(data[:100]))
-
-    # 构建插桩程序的命令
-    command = [program_path, input_file_path] + additional_args
-
-    # 执行插桩程序
     try:
-        result = subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, env=os.environ)
+        # 创建共享内存
+        shm = sysv_ipc.SharedMemory(None, flags=sysv_ipc.IPC_CREX, mode=0o600, size=SHM_SIZE)
+        os.environ[SHM_ENV_VAR] = str(shm.id)
+        initial_data = bytes([0] * SHM_SIZE)  # 64KB 的全 0 数据
+        shm.write(initial_data)
+
+        print(f"Shared Memory ID: {shm.id}")
+
+        # 构建插桩程序的命令
+        command = [program_path, input_file_path] + additional_args
+
+        # 执行插桩程序
+        result = subprocess.run(
+            command,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            env=os.environ,
+            timeout=10  # 超时时间（秒）
+        )
         if result.returncode != 0:
             sys.exit(f"Program exited with non-zero status: {result.returncode}")
+
+        # 读取共享内存内容
+        data = shm.read(SHM_SIZE)
+        print("Shared Memory Content (Decimal):", list(data[:100]))
+
+        # 计算覆盖率
+        total_slots, non_zero_slots, coverage_percentage = calculate_coverage(data)
+
+        # 输出覆盖率信息
+        print(f"Total Slots: {total_slots}")
+        print(f"Non-Zero Slots: {non_zero_slots}")
+        print(f"{coverage_percentage:.2f}%")
+
+    except subprocess.TimeoutExpired:
+        sys.exit("Program timed out.")
     except Exception as e:
-        sys.exit(f"Failed to execute program: {e}")
-
-    # 读取共享内存内容
-    data = shm.read(SHM_SIZE)
-    print("Shared Memory Content (Decimal):", list(data[:100]))
-
-
-    # 计算覆盖率
-    total_slots, non_zero_slots, coverage_percentage = calculate_coverage(data)
-
-    # 输出覆盖率信息
-    print(f"Total Slots: {total_slots}")
-    print(f"Non-Zero Slots: {non_zero_slots}")
-    print(f"{coverage_percentage:.2f}%")
-
-    # 输出位图前 100 字节（十进制表示）
-    decimal_data = [byte for byte in data[:100]]
-    print("Shared Memory Content (First 100 Bytes in Decimal):", decimal_data)
-
-    # 释放共享内存
-    shm.remove()
+        sys.exit(f"An error occurred: {e}")
+    finally:
+        # 释放共享内存
+        try:
+            shm.remove()
+            print("Shared memory removed successfully.")
+        except Exception as e:
+            print(f"Failed to remove shared memory: {e}")
 
 if __name__ == "__main__":
     main()
