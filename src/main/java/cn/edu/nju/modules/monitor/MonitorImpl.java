@@ -123,20 +123,30 @@ public class MonitorImpl implements Monitor {
         try {
             log("=== Coverage Data ===");
 
-            // 这里仅示例打印出 ResourcesManager 里的 coverage 情况
-            // 如果要打印 iterationCoverageMap，请自行处理
+
+            // 1. 记录资源管理器的覆盖率数据
             resourcesManager.getCoverageData().forEach((seedPath, coverage) -> {
                 log("Seed: " + seedPath + " | Coverage: " + coverage);
             });
 
-            // Calculate execution speed (executions per second)
+            // 2. 计算执行速度
             long durationSeconds = (endTime - startTime) / 1000;
-            if (durationSeconds == 0) durationSeconds = 1; // Avoid division by zero
-            int totalExecutions = resourcesManager.getCoverageData().size(); // Placeholder
+            if (durationSeconds == 0) durationSeconds = 1;
+            int totalExecutions = resourcesManager.getCoverageData().size(); // 实际逻辑的占位符
             double executionsPerSecond = (double) totalExecutions / durationSeconds;
-            log("Coverage data: " + executor.getCoverageData().get(executor.getCoverageData().size() - 1) * 100 + "%");
+            log("Executions per second: " + executionsPerSecond);
 
-            // Save special test cases if any
+            // 3. 安全访问执行器的覆盖率数据
+            List<Double> coverageData = executor.getCoverageData();
+            if (coverageData == null || coverageData.isEmpty()) {
+                log("No coverage data available from executor.");
+            } else {
+
+                double lastCoverage = coverageData.get(coverageData.size() - 1);
+                log("Coverage data: " + (lastCoverage * 100) + "%");
+            }
+
+            // 4. 记录漏洞
             if (!resourcesManager.getVulnerabilities().isEmpty()) {
                 log("=== Vulnerabilities Detected ===");
                 resourcesManager.getVulnerabilities().forEach(vuln -> {
