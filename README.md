@@ -37,7 +37,7 @@
 2. 准备资源：待测可执行文件和初始种子
 3. 传递参数
 ```shell
-java -jar fuzz-test-afl-2024-1.0-SNAPSHOT.jar <test-file-path> <options> <initial-seeds-path> -o <output-path>
+java -jar fuzz-test-afl-2024-1.0-SNAPSHOT.jar <test-file-path> [<options>] <initial-seeds-path> -o <output-path>
 ```
 示例：
 ```shell
